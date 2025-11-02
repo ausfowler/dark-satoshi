@@ -429,25 +429,24 @@ const ContentTemplates = {
 // Initialize social automation
 let socialAutomation;
 document.addEventListener('DOMContentLoaded', () => {
-    // Only initialize in development
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        socialAutomation = new SocialAutomation();
-        
-        // Add keyboard shortcut to toggle social panel (Ctrl+Shift+S)
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
-                e.preventDefault();
-                const panel = document.getElementById('social-dashboard');
-                if (panel) {
-                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-                } else if (socialAutomation) {
-                    socialAutomation.createDashboard();
-                }
+    // Initialize social automation on all environments
+    socialAutomation = new SocialAutomation();
+    
+    // Add keyboard shortcut to toggle social panel (Ctrl+Shift+S)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+            e.preventDefault();
+            const panel = document.getElementById('social-dashboard');
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            } else if (socialAutomation) {
+                socialAutomation.createDashboard();
             }
-        });
-    }
+        }
+    });
 });
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SocialAutomation, ContentTemplates 
+    module.exports = { SocialAutomation, ContentTemplates };
+}

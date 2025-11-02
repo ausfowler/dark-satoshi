@@ -464,23 +464,21 @@ class TradingStrategies {
 // Initialize market maker when page loads
 let marketMaker;
 document.addEventListener('DOMContentLoaded', () => {
-    // Only initialize in development mode
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        marketMaker = new MarketMaker();
-        
-        // Add keyboard shortcut to toggle panel (Ctrl+Shift+K)
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'K') {
-                e.preventDefault();
-                const panel = document.getElementById('market-maker-panel');
-                if (panel) {
-                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-                } else if (marketMaker) {
-                    marketMaker.createControlPanel();
-                }
+    // Initialize market maker on all environments
+    marketMaker = new MarketMaker();
+    
+    // Add keyboard shortcut to toggle panel (Ctrl+Shift+K)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'K') {
+            e.preventDefault();
+            const panel = document.getElementById('market-maker-panel');
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            } else if (marketMaker) {
+                marketMaker.createControlPanel();
             }
-        });
-    }
+        }
+    });
 });
 
 // Handle page visibility for performance
