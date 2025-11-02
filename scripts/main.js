@@ -466,6 +466,70 @@ function scrollToSection(sectionId) {
     }
 }
 
+// Copy contract address to clipboard
+function copyContract() {
+    const contractElement = document.getElementById('contract-address');
+    if (contractElement) {
+        const contractText = contractElement.textContent;
+        
+        // Don't copy if it's still "Coming Soon..."
+        if (contractText === 'Coming Soon...') {
+            if (window.darkSatoshi) {
+                window.darkSatoshi.showNotification('Contract address not available yet!', 'warning');
+            }
+            return;
+        }
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(contractText).then(() => {
+            if (window.darkSatoshi) {
+                window.darkSatoshi.showNotification('Contract address copied!', 'success');
+            }
+            
+            // Visual feedback on button
+            const copyBtn = document.getElementById('copy-ca');
+            if (copyBtn) {
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 2000);
+            }
+        }).catch(() => {
+            if (window.darkSatoshi) {
+                window.darkSatoshi.showNotification('Failed to copy address', 'error');
+            }
+        });
+    }
+}
+
+// Update contract address (call this when you have the real contract)
+function updateContractAddress(address) {
+    const contractElement = document.getElementById('contract-address');
+    const copyBtn = document.getElementById('copy-ca');
+    
+    if (contractElement && address) {
+        contractElement.textContent = address;
+        contractElement.style.fontSize = '0.9rem'; // Smaller font for real address
+        
+        // Show copy button when real address is available
+        if (copyBtn) {
+            copyBtn.style.display = 'inline-block';
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('darkSatoshiContract', address);
+    }
+}
+
+// Load contract address from localStorage on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const savedContract = localStorage.getItem('darkSatoshiContract');
+    if (savedContract) {
+        updateContractAddress(savedContract);
+    }
+});
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.darkSatoshi = new DarkSatoshi();

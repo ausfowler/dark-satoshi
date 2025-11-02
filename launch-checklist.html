@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Satoshi Launch Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #141414;
+            --accent-green: #00ff41;
+            --accent-cyan: #00ffff;
+            --accent-yellow: #ffeb3b;
+            --accent-red: #ff3b3b;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #2a2a2a;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.1;
+            background: 
+                radial-gradient(circle at 20% 50%, var(--accent-green) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--accent-cyan) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--accent-green), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            font-family: 'Space Grotesk', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--bg-primary);
+        }
+
+        /* Timer */
+        .timer-container {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--accent-green);
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        }
+
+        .timer-label {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        #countdown {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .launch-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-green), var(--accent-cyan));
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-green);
+        }
+
+        /* Phases */
+        .phases-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .phase {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .phase.active::before {
+            transform: scaleX(1);
+        }
+
+        .phase:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent-green);
+        }
+
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .phase-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, var(--accent-green), var(--accent-cyan));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .phase-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .status-active {
+            background: var(--warning);
+            color: var(--bg-primary);
+            animation: pulse 2s infinite;
+        }
+
+        .status-complete {
+            background: var(--success);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Checklist Items */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .checklist-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateX(5px);
+        }
+
+        .checklist-item.checked {
+            opacity: 0.7;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--accent-green);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background: var(--accent-green);
+            animation: checkmark 0.3s ease;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-text {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            line-height: 1.5;
+        }
+
+        .checklist-item.checked .checklist-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .checklist-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-link:hover {
+            color: var(--accent-green);
+            transform: translateX(3px);
+        }
+
+        .checklist-note {
+            background: rgba(255, 235, 59, 0.1);
+            border-left: 3px solid var(--accent-yellow);
+            padding: 8px 12px;
+            margin-top: 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            color: var(--accent-yellow);
+        }
+
+        /* Tools Section */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-green);
+            box-shadow: 0 10px 20px rgba(0, 255, 65, 0.2);
+        }
+
+        .tool-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .tool-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+        }
+
+        .reset-btn {
+            background: var(--danger);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .phases-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--accent-green), var(--accent-cyan));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .fab-icon {
+            font-size: 1.5rem;
+            color: var(--bg-primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--accent-green);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-green);
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .modal-close {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌑 DARK SATOSHI LAUNCH CENTER</h1>
+            <p class="subtitle">Your Complete Meme Coin Launch Command Center</p>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat">
+                    <div class="stat-value" id="total-progress">0%</div>
+                    <div class="stat-label">Overall Progress</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tasks-complete">0/0</div>
+                    <div class="stat-label">Tasks Complete</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="phase-status">Pre-Launch</div>
+                    <div class="stat-label">Current Phase</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="time-remaining">--:--:--</div>
+                    <div class="stat-label">Until Launch</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill">0%</div>
+            </div>
+        </div>
+
+        <!-- Launch Timer -->
+        <div class="timer-container">
+            <div class="timer-label">Launch Countdown</div>
+            <div id="countdown">NOT SET</div>
+            <div class="launch-controls">
+                <button class="btn btn-primary" onclick="setLaunchTime()">Set Launch Time</button>
+                <button class="btn btn-secondary" onclick="startLaunch()">🚀 LAUNCH NOW</button>
+            </div>
+        </div>
+
+        <!-- Phase Checklists -->
+        <div class="phases-container">
+            <!-- Phase 1: Pre-Launch Setup -->
+            <div class="phase" data-phase="1">
+                <div class="phase-header">
+                    <div class="phase-title">
+                        <div class="phase-icon">📋</div>
+                        Phase 1: Pre-Launch Setup
+                    </div>
+                    <div class="phase-status status-pending">Pending</div>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item" data-task="1-1">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Create Twitter/X account @DarkSatoshi</div>
+                            <a href="https://twitter.com" target="_blank" class="checklist-link">
+                                Go to Twitter →
+                            </a>
+                            <div class="checklist-note">Bio: "Where shadows meet blockchain 🌑 | $DSAT on Solana"</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-2">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Create Telegram group</div>
+                            <a href="https://telegram.org" target="_blank" class="checklist-link">
+                                Create on Telegram →
+                            </a>
+                            <div class="checklist-note">Name: Dark Satoshi Official | Add price bot & welcome message</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-3">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Set up Discord server</div>
+                            <a href="https://discord.com" target="_blank" class="checklist-link">
+                                Create Discord →
+                            </a>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-4">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Join 10+ Solana raid groups</div>
+                            <div class="checklist-note">Solana Trenches, Pump.fun Plays, Sol Casino, etc.</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-5">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Prepare launch tweet draft</div>
+                            <div class="checklist-note">🌑 DARK SATOSHI HAS AWAKENED 🌑 Template ready</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-6">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Fund main wallet with 2-3 SOL</div>
+                            <a href="https://phantom.app" target="_blank" class="checklist-link">
+                                Phantom Wallet →
+                            </a>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-7">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Fund 3 volume wallets (0.5 SOL each)</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-8">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Set up Maestro Bot or volume bot</div>
+                            <a href="https://t.me/MaestroSniperBot" target="_blank" class="checklist-link">
+                                Maestro Bot →
+                            </a>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-9">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Test website on mobile & desktop</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="1-10">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Prepare 10 different shill messages</div>
+                            <div class="checklist-note">Vary messages to avoid spam detection</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Phase 2: T-30 Minutes -->
+            <div class="phase" data-phase="2">
+                <div class="phase-header">
+                    <div class="phase-title">
+                        <div class="phase-icon">⏰</div>
+                        Phase 2: T-30 Minutes
+                    </div>
+                    <div class="phase-status status-pending">Pending</div>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item" data-task="2-1">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Post "30 minutes until darkness" on Twitter</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="2-2">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Alert Telegram group about launch</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="2-3">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Message volume team/helpers</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="2-4">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Open Pump.fun in multiple browsers</div>
+                            <a href="https://pump.fun" target="_blank" class="checklist-link">
+                                Open Pump.fun →
+                            </a>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="2-5">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Have all wallets connected and ready</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="2-6">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Clear schedule for next 2 hours</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Phase 3: Launch (T-0) -->
+            <div class="phase" data-phase="3">
+                <div class="phase-header">
+                    <div class="phase-title">
+                        <div class="phase-icon">🚀</div>
+                        Phase 3: LAUNCH (T-0)
+                    </div>
+                    <div class="phase-status status-pending">Pending</div>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item" data-task="3-1">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">CREATE TOKEN ON PUMP.FUN</div>
+                            <a href="https://pump.fun" target="_blank" class="checklist-link">
+                                Launch on Pump.fun →
+                            </a>
+                            <div class="checklist-note">Name: Dark Satoshi | Symbol: DSAT | Upload icon</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="3-2">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">COPY CONTRACT ADDRESS</div>
+                            <div class="checklist-note">⚠️ CRITICAL: Save CA immediately!</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="3-3">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Buy with main wallet (0.5-1 SOL)</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="3-4">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Post contract on Twitter</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="3-5">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Post contract in Telegram</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="3-6">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Update website with CA</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Phase 4: First 5 Minutes -->
+            <div class="phase" data-phase="4">
+                <div class="phase-header">
+                    <div class="phase-title">
+                        <div class="phase-icon">⚡</div>
+                        Phase 4: First 5 Minutes
+                    </div>
+                    <div class="phase-status status-pending">Pending</div>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item" data-task="4-1">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Buy from wallet #2 (0.2 SOL)</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="4-2">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Buy from wallet #3 (0.15 SOL)</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="4-3">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Start volume bot</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="4-4">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Post in first 3 raid groups</div>
+                            <div class="checklist-note">Space out by 30-60 seconds</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="4-5">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Reply to any comments/questions</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="4-6">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Take screenshot if up 50%+</div>
+                            <div class="checklist-note">Post: "Already 2x in 5 minutes! 🚀"</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Phase 5: First 20 Minutes (Critical) -->
+            <div class="phase" data-phase="5">
+                <div class="phase-header">
+                    <div class="phase-title">
+                        <div class="phase-icon">🔥</div>
+                        Phase 5: First 20 Min (Critical!)
+                    </div>
+                    <div class="phase-status status-pending">Pending</div>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item" data-task="5-1">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Continue posting in remaining groups</div>
+                            <div class="checklist-note">Space out posts, vary messages</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="5-2">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Monitor chart closely</div>
+                            <a href="https://dexscreener.com/solana" target="_blank" class="checklist-link">
+                                DexScreener →
+                            </a>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="5-3">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Add more buys if momentum slowing</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="5-4">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Post holder milestones</div>
+                            <div class="checklist-note">25 holders: "25 BELIEVERS!" | 50: "FASTEST GROWING!"</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="5-5">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Keep Telegram active & engaged</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="5-6">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">DO NOT SELL ANY TOKENS</div>
+                            <div class="checklist-note">⚠️ CRITICAL: Hold all tokens first hour!</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Phase 6: First Hour Goals -->
+            <div class="phase" data-phase="6">
+                <div class="phase-header">
+                    <div class="phase-title">
+                        <div class="phase-icon">🎯</div>
+                        Phase 6: First Hour Goals
+                    </div>
+                    <div class="phase-status status-pending">Pending</div>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item" data-task="6-1">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Reach 50+ holders</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="6-2">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Hit $25K+ market cap</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="6-3">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Generate $10K+ volume</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="6-4">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Get 100+ Telegram members</div>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="6-5">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Submit to tracking sites</div>
+                            <a href="https://birdeye.so" target="_blank" class="checklist-link">
+                                Birdeye →
+                            </a>
+                        </div>
+                    </li>
+                    <li class="checklist-item" data-task="6-6">
+                        <div class="checkbox"></div>
+                        <div class="checklist-content">
+                            <div class="checklist-text">Plan next marketing push</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Essential Tools -->
+        <div class="phase">
+            <div class="phase-header">
+                <div class="phase-title">
+                    <div class="phase-icon">🛠️</div>
+                    Essential Launch Tools
+                </div>
+            </div>
+            <div class="tools-grid">
+                <a href="https://pump.fun" target="_blank" class="tool-card">
+                    <div class="tool-icon">🚀</div>
+                    <div class="tool-name">Pump.fun</div>
+                    <div class="tool-desc">Launch platform</div>
+                </a>
+                <a href="https://phantom.app" target="_blank" class="tool-card">
+                    <div class="tool-icon">👻</div>
+                    <div class="tool-name">Phantom</div>
+                    <div class="tool-desc">Solana wallet</div>
+                </a>
+                <a href="https://t.me/MaestroSniperBot" target="_blank" class="tool-card">
+                    <div class="tool-icon">🤖</div>
+                    <div class="tool-name">Maestro Bot</div>
+                    <div class="tool-desc">Volume generation</div>
+                </a>
+                <a href="https://dexscreener.com/solana" target="_blank" class="tool-card">
+                    <div class="tool-icon">📊</div>
+                    <div class="tool-name">DexScreener</div>
+                    <div class="tool-desc">Chart tracking</div>
+                </a>
+                <a href="https://birdeye.so" target="_blank" class="tool-card">
+                    <div class="tool-icon">🦅</div>
+                    <div class="tool-name">Birdeye</div>
+                    <div class="tool-desc">Analytics</div>
+                </a>
+                <a href="https://solscan.io" target="_blank" class="tool-card">
+                    <div class="tool-icon">🔍</div>
+                    <div class="tool-name">Solscan</div>
+                    <div class="tool-desc">Explorer</div>
+                </a>
+                <a href="https://twitter.com" target="_blank" class="tool-card">
+                    <div class="tool-icon">🐦</div>
+                    <div class="tool-name">Twitter/X</div>
+                    <div class="tool-desc">Social media</div>
+                </a>
+                <a href="https://telegram.org" target="_blank" class="tool-card">
+                    <div class="tool-icon">💬</div>
+                    <div class="tool-name">Telegram</div>
+                    <div class="tool-desc">Community</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <button class="reset-btn" onclick="resetProgress()">🔄 Reset All Progress</button>
+            <p style="margin-top: 20px; color: var(--text-secondary);">
+                Dark Satoshi Launch Center v1.0 | Auto-saves to local storage
+            </p>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="showTips()">
+        <span class="fab-icon">💡</span>
+    </div>
+
+    <!-- Tips Modal -->
+    <div class="modal" id="tipsModal">
+        <div class="modal-content">
+            <div class="modal-header">Pro Launch Tips</div>
+            <div class="modal-body">
+                <p><strong>🎯 Best Launch Times:</strong><br>
+                Tuesday-Thursday, 2-4 PM EST for maximum volume</p>
+                
+                <p><strong>⚡ First 20 Minutes:</strong><br>
+                This is when you appear in "New Tokens" - critical for discovery!</p>
+                
+                <p><strong>💰 Investment Strategy:</strong><br>
+                Initial: 1 SOL | Follow-up: 0.5 SOL | Volume: 0.5 SOL</p>
+                
+                <p><strong>📈 Profit Targets:</strong><br>
+                5x: Take initial | 10x: Take 25% | 20x: Take 25% | Let rest ride</p>
+                
+                <p><strong>⚠️ Never:</strong><br>
+                • Launch on weekends<br>
+                • Sell in first hour<br>
+                • Spam same message<br>
+                • Panic on dips</p>
+            </div>
+            <button class="btn btn-primary modal-close" onclick="closeTips()">Got it!</button>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let checkedTasks = JSON.parse(localStorage.getItem('darkSatoshiChecklist')) || {};
+        let launchTime = localStorage.getItem('darkSatoshiLaunchTime') || null;
+        let countdownInterval;
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            setupEventListeners();
+            updateProgress();
+            if (launchTime) {
+                startCountdown();
+            }
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A') return;
+                    toggleTask(this);
+                });
+            });
+        }
+
+        // Toggle task completion
+        function toggleTask(item) {
+            const taskId = item.dataset.task;
+            const checkbox = item.querySelector('.checkbox');
+            
+            if (checkedTasks[taskId]) {
+                delete checkedTasks[taskId];
+                item.classList.remove('checked');
+                checkbox.classList.remove('checked');
+            } else {
+                checkedTasks[taskId] = true;
+                item.classList.add('checked');
+                checkbox.classList.add('checked');
+            }
+            
+            saveProgress();
+            updateProgress();
+            updatePhaseStatus();
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('darkSatoshiChecklist', JSON.stringify(checkedTasks));
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            Object.keys(checkedTasks).forEach(taskId => {
+                const item = document.querySelector(`[data-task="${taskId}"]`);
+                if (item) {
+                    item.classList.add('checked');
+                    item.querySelector('.checkbox').classList.add('checked');
+                }
+            });
+        }
+
+        // Update progress stats
+        function updateProgress() {
+            const totalTasks = document.querySelectorAll('.checklist-item').length;
+            const completedTasks = Object.keys(checkedTasks).length;
+            const percentage = Math.round((completedTasks / totalTasks) * 100);
+            
+            document.getElementById('total-progress').textContent = percentage + '%';
+            document.getElementById('tasks-complete').textContent = `${completedTasks}/${totalTasks}`;
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-fill').textContent = percentage + '%';
+            
+            // Update phase status
+            if (percentage === 0) {
+                document.getElementById('phase-status').textContent = 'Pre-Launch';
+            } else if (percentage < 20) {
+                document.getElementById('phase-status').textContent = 'Setup';
+            } else if (percentage < 40) {
+                document.getElementById('phase-status').textContent = 'Preparing';
+            } else if (percentage < 60) {
+                document.getElementById('phase-status').textContent = 'Ready';
+            } else if (percentage < 80) {
+                document.getElementById('phase-status').textContent = 'Launching';
+            } else if (percentage < 100) {
+                document.getElementById('phase-status').textContent = 'Active';
+            } else {
+                document.getElementById('phase-status').textContent = 'Complete! 🎉';
+            }
+        }
+
+        // Update phase status indicators
+        function updatePhaseStatus() {
+            document.querySelectorAll('.phase').forEach(phase => {
+                const phaseNum = phase.dataset.phase;
+                const tasks = phase.querySelectorAll('.checklist-item');
+                const completed = Array.from(tasks).filter(task => 
+                    checkedTasks[task.dataset.task]
+                ).length;
+                
+                const statusEl = phase.querySelector('.phase-status');
+                
+                if (completed === 0) {
+                    statusEl.className = 'phase-status status-pending';
+                    statusEl.textContent = 'Pending';
+                    phase.classList.remove('active');
+                } else if (completed < tasks.length) {
+                    statusEl.className = 'phase-status status-active';
+                    statusEl.textContent = 'In Progress';
+                    phase.classList.add('active');
+                } else {
+                    statusEl.className = 'phase-status status-complete';
+                    statusEl.textContent = 'Complete';
+                    phase.classList.remove('active');
+                }
+            });
+        }
+
+        // Set launch time
+        function setLaunchTime() {
+            const time = prompt('Enter launch time (e.g., "2024-11-02 14:00"):');
+            if (time) {
+                launchTime = new Date(time).getTime();
+                localStorage.setItem('darkSatoshiLaunchTime', launchTime);
+                startCountdown();
+            }
+        }
+
+        // Start countdown
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = launchTime - now;
+                
+                if (distance < 0) {
+                    document.getElementById('countdown').textContent = 'LAUNCH TIME! 🚀';
+                    document.getElementById('time-remaining').textContent = 'NOW!';
+                    clearInterval(countdownInterval);
+                    return;
+                }
+                
+                const hours = Math.floor(distance / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('countdown').textContent = timeString;
+                document.getElementById('time-remaining').textContent = timeString;
+                
+                // Alert at key times
+                if (distance < 1800000 && distance > 1799000) { // 30 minutes
+                    alert('⏰ 30 MINUTES UNTIL LAUNCH! Start Phase 2!');
+                }
+                if (distance < 300000 && distance > 299000) { // 5 minutes
+                    alert('🚨 5 MINUTES! Get ready!');
+                }
+            }, 1000);
+        }
+
+        // Start launch immediately
+        function startLaunch() {
+            if (confirm('Start launch sequence now?')) {
+                launchTime = new Date().getTime();
+                localStorage.setItem('darkSatoshiLaunchTime', launchTime);
+                document.getElementById('countdown').textContent = 'LAUNCHING! 🚀';
+                alert('🚀 LAUNCH SEQUENCE INITIATED!\n\n1. Go to Pump.fun NOW\n2. Create token\n3. Follow Phase 3 checklist!');
+            }
+        }
+
+        // Reset all progress
+        function resetProgress() {
+            if (confirm('Reset all progress? This cannot be undone!')) {
+                checkedTasks = {};
+                localStorage.removeItem('darkSatoshiChecklist');
+                localStorage.removeItem('darkSatoshiLaunchTime');
+                location.reload();
+            }
+        }
+
+        // Show tips modal
+        function showTips() {
+            document.getElementById('tipsModal').classList.add('active');
+        }
+
+        // Close tips modal
+        function closeTips() {
+            document.getElementById('tipsModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('tipsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTips();
+            }
+        });
+    </script>
+</body>
+</html>
