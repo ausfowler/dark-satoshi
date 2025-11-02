@@ -1,0 +1,29 @@
+{
+  "name": "dark-satoshi",
+  "version": "1.0.0",
+  "description": "Dark Satoshi - The Shadow of Crypto. Professional meme coin with automated trading and social media tools.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "build": "echo 'Static site - no build needed'",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": [
+    "cryptocurrency",
+    "meme-coin",
+    "solana",
+    "dark-satoshi",
+    "automated-trading",
+    "social-media-automation"
+  ],
+  "author": "Dark Satoshi Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dark-satoshi/dark-satoshi-website"
+  },
+  "homepage": "https://darksatoshi.com",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
