@@ -535,6 +535,37 @@ document.addEventListener('DOMContentLoaded', () => {
     window.darkSatoshi = new DarkSatoshi();
 });
 
+// Global functions for HTML onclick handlers
+function openSocial(platform) {
+    if (window.darkSatoshi) {
+        window.darkSatoshi.openSocial(platform);
+    }
+}
+
+function connectWallet() {
+    if (window.darkSatoshi) {
+        window.darkSatoshi.connectWallet();
+    }
+}
+
+function executeTrade(type) {
+    if (window.darkSatoshi) {
+        window.darkSatoshi.executeTrade(type);
+    }
+}
+
+function claimAirdrop() {
+    if (window.darkSatoshi) {
+        window.darkSatoshi.claimAirdrop();
+    }
+}
+
+function shareReferral() {
+    if (window.darkSatoshi) {
+        window.darkSatoshi.shareReferral();
+    }
+}
+
 // Handle page visibility for performance
 document.addEventListener('visibilitychange', () => {
     if (window.darkSatoshi && document.hidden) {
