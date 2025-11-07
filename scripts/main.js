@@ -412,8 +412,8 @@ class DarkSatoshi {
     openSocial(platform) {
         const links = {
             x: 'https://x.com/dark_satoshi_',
-            telegram: 'https://t.me/darksatoshi',
-            discord: 'https://discord.gg/darksatoshi',
+            telegram: 'https://t.me/darksatoshiofficial',
+            discord: 'https://discord.gg/VaE2CSue',
             youtube: 'https://youtube.com/@darksatoshi'
         };
         
