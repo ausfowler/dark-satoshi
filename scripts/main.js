@@ -411,17 +411,17 @@ class DarkSatoshi {
     // Open social media
     openSocial(platform) {
         const links = {
-            x: 'https://x.com/darksatoshi',
+            x: 'https://x.com/dark_satoshi_',
             telegram: 'https://t.me/darksatoshi',
             discord: 'https://discord.gg/darksatoshi',
             youtube: 'https://youtube.com/@darksatoshi'
         };
         
-        // For demo purposes, show notification
-        this.showNotification(`Opening ${platform}...`, 'info');
+        // Open the actual social media link
+        window.open(links[platform], '_blank');
         
-        // In real implementation, use the actual links
-        // window.open(links[platform], '_blank');
+        // Show notification
+        this.showNotification(`Opening ${platform}...`, 'info');
     }
 
     // Show notification
